@@ -1,0 +1,22 @@
+# Dépendances PHP
+/vendor/
+
+# Dépendances JS
+/node_modules/
+
+# Variables sensibles
+.env
+.env.local
+
+# Volumes Docker (si présents)
+/docker/volumes/
+
+# Logs
+*.log
+
+# OS
+.DS_Store
+
+# Symfony
+/var/
+/public/build/
