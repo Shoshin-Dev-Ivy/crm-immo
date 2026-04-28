@@ -20,3 +20,4 @@
 # Symfony
 /var/
 /public/build/
+backend/config/reference.php
