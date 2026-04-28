@@ -3,8 +3,12 @@
 namespace App\Entity;
 
 use App\Repository\LeadRepository;
+use App\Enum\LeadStatus;
+use ApiPlatform\Metadata\ApiResource;
+use Symfony\Component\Validator\Constraints as Assert;
 use Doctrine\ORM\Mapping as ORM;
 
+#[ApiResource]
 #[ORM\Entity(repositoryClass: LeadRepository::class)]
 class Lead
 {
@@ -13,20 +17,22 @@ class Lead
     #[ORM\Column]
     private ?int $id = null;
 
-    #[ORM\Column(length: 255)]
+    #[Assert\NotBlank]
+    #[ORM\Column(length: 150)]
     private ?string $name = null;
 
+    #[Assert\NotBlank]
+    #[Assert\Email]
     #[ORM\Column(length: 255)]
     private ?string $email = null;
 
-    #[ORM\Column(length: 255)]
-    private ?string $status = null;
+    #[ORM\Column(enumType: LeadStatus::class)]
+    private LeadStatus $status;
 
-    #[ORM\Column(nullable: true)]
-    private ?float $latitude = null;
-
-    #[ORM\Column(nullable: true)]
-    private ?float $longitude = null;
+    public function __construct()
+    {
+        $this->status = LeadStatus::NEW;
+    }
 
     public function getId(): ?int
     {
@@ -41,7 +47,6 @@ class Lead
     public function setName(string $name): static
     {
         $this->name = $name;
-
         return $this;
     }
 
@@ -53,43 +58,17 @@ class Lead
     public function setEmail(string $email): static
     {
         $this->email = $email;
-
         return $this;
     }
 
-    public function getStatus(): ?string
+    public function getStatus(): LeadStatus
     {
         return $this->status;
     }
 
-    public function setStatus(string $status): static
+    public function setStatus(LeadStatus $status): static
     {
         $this->status = $status;
-
-        return $this;
-    }
-
-    public function getLatitude(): ?float
-    {
-        return $this->latitude;
-    }
-
-    public function setLatitude(?float $latitude): static
-    {
-        $this->latitude = $latitude;
-
-        return $this;
-    }
-
-    public function getLongitude(): ?float
-    {
-        return $this->longitude;
-    }
-
-    public function setLongitude(?float $longitude): static
-    {
-        $this->longitude = $longitude;
-
         return $this;
     }
 }
