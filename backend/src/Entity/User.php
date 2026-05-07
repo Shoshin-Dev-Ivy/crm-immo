@@ -12,24 +12,31 @@ use ApiPlatform\Metadata\ApiResource;
 #[ORM\Table(name: 'users')]
 #[ORM\UniqueConstraint(name: 'UNIQ_IDENTIFIER_EMAIL', fields: ['email'])]
 #[ORM\HasLifecycleCallbacks]
-#[ApiResource]
+#[ApiResource(
+    normalizationContext: ['groups' => ['user:read']],
+    denormalizationContext: ['groups' => ['user:write']]
+)]
 class User implements UserInterface, PasswordAuthenticatedUserInterface
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
+    #[Groups(['user:read'])]
     private ?int $id = null;
 
     #[ORM\Column(length: 180, unique: true)]
+    #[Groups(['user:read'])]
     private ?string $email = null;
 
     /**
      * @var list<string>
      */
     #[ORM\Column]
+    #[Groups(['user:read'])]
     private array $roles = [];
 
     #[ORM\Column]
+    #[Groups(['user:write'])]
     private ?string $password = null;
 
     // =========================
@@ -37,15 +44,19 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     // =========================
 
     #[ORM\Column(length: 100, nullable: true)]
+    #[Groups(['user:read', 'user:write'])]
     private ?string $firstname = null;
 
     #[ORM\Column(length: 100, nullable: true)]
+    #[Groups(['user:read', 'user:write'])]
     private ?string $lastname = null;
 
     #[ORM\Column]
+    #[Groups(['user:read'])]
     private ?\DateTimeImmutable $createdAt = null;
 
     #[ORM\Column]
+    #[Groups(['user:read'])]
     private ?\DateTimeImmutable $updatedAt = null;
 
     // =========================

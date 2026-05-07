@@ -7,6 +7,10 @@ services:
     depends_on:
       db:
         condition: service_healthy
+    environment:
+      JWT_PASSPHRASE: devpass012023
+      JWT_SECRET_KEY: /var/www/config/jwt/private.pem
+      JWT_PUBLIC_KEY: /var/www/config/jwt/public.pem
 
   nginx:
     image: nginx:1.27-alpine
