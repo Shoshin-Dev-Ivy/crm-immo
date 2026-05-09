@@ -3,6 +3,8 @@
 namespace App\Entity;
 
 use App\Repository\UserRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
@@ -14,7 +16,8 @@ use ApiPlatform\Metadata\ApiResource;
 #[ORM\HasLifecycleCallbacks]
 #[ApiResource(
     normalizationContext: ['groups' => ['user:read']],
-    denormalizationContext: ['groups' => ['user:write']]
+    denormalizationContext: ['groups' => ['user:write']],
+    security: "is_granted('ROLE_USER')"
 )]
 class User implements UserInterface, PasswordAuthenticatedUserInterface
 {
@@ -58,6 +61,17 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column]
     #[Groups(['user:read'])]
     private ?\DateTimeImmutable $updatedAt = null;
+
+    /**
+     * @var Collection<int, Lead>
+     */
+    #[ORM\OneToMany(targetEntity: Lead::class, mappedBy: 'owner')]
+    private Collection $leads;
+
+    public function __construct()
+    {
+        $this->leads = new ArrayCollection();
+    }
 
     // =========================
     // LIFECYCLE
@@ -155,5 +169,35 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function eraseCredentials(): void
     {
         // nothing needed (JWT stateless)
+    }
+
+    /**
+     * @return Collection<int, Lead>
+     */
+    public function getLeads(): Collection
+    {
+        return $this->leads;
+    }
+
+    public function addLead(Lead $lead): static
+    {
+        if (!$this->leads->contains($lead)) {
+            $this->leads->add($lead);
+            $lead->setOwner($this);
+        }
+
+        return $this;
+    }
+
+    public function removeLead(Lead $lead): static
+    {
+        if ($this->leads->removeElement($lead)) {
+            // set the owning side to null (unless already changed)
+            if ($lead->getOwner() === $this) {
+                $lead->setOwner(null);
+            }
+        }
+
+        return $this;
     }
 }

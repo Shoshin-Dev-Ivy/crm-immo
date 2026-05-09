@@ -7,8 +7,24 @@ use App\Enum\LeadStatus;
 use ApiPlatform\Metadata\ApiResource;
 use Symfony\Component\Validator\Constraints as Assert;
 use Doctrine\ORM\Mapping as ORM;
+use ApiPlatform\Metadata\Get;
+use ApiPlatform\Metadata\GetCollection;
+use ApiPlatform\Metadata\Post;
 
-#[ApiResource]
+
+#[ApiResource(
+    operations: [
+        new Get(
+            security: "object.getOwner() == user or is_granted('ROLE_ADMIN')"
+        ),
+        new GetCollection(
+            provider: \App\State\LeadCollectionProvider::class),
+        new Post()
+    ],
+    processor: \App\State\LeadProcessor::class,
+    security: "is_granted('ROLE_USER')"
+)]
+
 #[ORM\Entity(repositoryClass: LeadRepository::class)]
 class Lead
 {
@@ -28,6 +44,13 @@ class Lead
 
     #[ORM\Column(enumType: LeadStatus::class)]
     private LeadStatus $status;
+
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $company = null;
+
+    #[ORM\ManyToOne(inversedBy: 'leads')]
+    #[ORM\JoinColumn(nullable: false)]
+    private ?User $owner = null;
 
     public function __construct()
     {
@@ -69,6 +92,30 @@ class Lead
     public function setStatus(LeadStatus $status): static
     {
         $this->status = $status;
+        return $this;
+    }
+
+    public function getCompany(): ?string
+    {
+        return $this->company;
+    }
+
+    public function setCompany(?string $company): static
+    {
+        $this->company = $company;
+
+        return $this;
+    }
+
+    public function getOwner(): ?User
+    {
+        return $this->owner;
+    }
+
+    public function setOwner(?User $owner): static
+    {
+        $this->owner = $owner;
+
         return $this;
     }
 }
