@@ -10,16 +10,30 @@ use Doctrine\ORM\Mapping as ORM;
 use ApiPlatform\Metadata\Get;
 use ApiPlatform\Metadata\GetCollection;
 use ApiPlatform\Metadata\Post;
-
+use ApiPlatform\Metadata\Patch;
+use ApiPlatform\Metadata\Delete;
 
 #[ApiResource(
     operations: [
         new Get(
-            security: "object.getOwner() == user or is_granted('ROLE_ADMIN')"
+            security: "is_granted('LEAD_VIEW', object)"
         ),
+
         new GetCollection(
-            provider: \App\State\LeadCollectionProvider::class),
-        new Post()
+            provider: \App\State\LeadCollectionProvider::class
+        ),
+
+        new Post(
+            security: "is_granted('ROLE_USER')"
+        ),
+
+        new Patch(
+            security: "is_granted('LEAD_EDIT', object)"
+        ),
+
+        new Delete(
+            security: "is_granted('LEAD_DELETE', object)"
+        )
     ],
     processor: \App\State\LeadProcessor::class,
     security: "is_granted('ROLE_USER')"
