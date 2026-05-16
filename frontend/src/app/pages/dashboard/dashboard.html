@@ -1,1 +1,59 @@
-<p>dashboard works!</p>
+<div class="dashboard-container">
+
+  <h1>Tableau de bord CRM Immobilier</h1>
+
+  <!-- FILTRES -->
+  <div class="filters">
+
+    <button (click)="selectedFilter='ALL'">
+      Tous
+    </button>
+
+    <button (click)="selectedFilter='NEW'">
+      Nouveaux
+    </button>
+
+    <button (click)="selectedFilter='VISIT'">
+      Visites
+    </button>
+
+    <button (click)="selectedFilter='SIGNED'">
+      Signés
+    </button>
+
+  </div>
+
+  <!-- KPI -->
+  <div class="kpi-grid">
+
+    <app-kpi-card
+      *ngFor="let kpi of kpis"
+      [kpi]="kpi">
+    </app-kpi-card>
+
+  </div>
+
+  <!-- PIPELINE -->
+  <div class="pipeline-section">
+
+    <app-pipeline-board
+      [leads]="leads">
+    </app-pipeline-board>
+
+  </div>
+
+  <!-- BOTTOM GRID -->
+  <div class="bottom-grid">
+
+    <app-recent-leads
+      [leads]="leads">
+    </app-recent-leads>
+
+    <app-overdue-tasks
+      [tasks]="tasks">
+    </app-overdue-tasks>
+
+  </div>
+
+</div>
+

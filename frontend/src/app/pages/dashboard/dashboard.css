@@ -1,0 +1,77 @@
+.dashboard-container {
+  padding: 24px;
+  min-height: 100vh;
+}
+
+/* =========================
+   FILTERS
+========================= */
+
+.filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+
+  margin-top: 12px;
+  margin-bottom: 32px;
+}
+
+.filters button {
+  border: none;
+  background: white;
+
+  padding: 12px 20px;
+
+  border-radius: 10px;
+
+  cursor: pointer;
+
+  font-size: 14px;
+  font-weight: 500;
+
+  box-shadow: 0 2px 6px rgba(0,0,0,0.06);
+
+  transition: transform 0.15s ease, background 0.15s ease;
+}
+
+.filters button:hover {
+  background: #eef2f7;
+  transform: translateY(-1px);
+}
+
+/* =========================
+   KPI GRID
+========================= */
+
+.kpi-grid {
+  display: grid;
+
+  grid-template-columns:
+    repeat(auto-fit, minmax(220px, 1fr));
+
+  gap: 20px;
+
+  margin-bottom: 24px;
+}
+
+/* =========================
+   PIPELINE
+========================= */
+
+.pipeline-section {
+  margin-bottom: 24px;
+}
+
+/* =========================
+   BOTTOM GRID
+========================= */
+
+.bottom-grid {
+  display: grid;
+
+  grid-template-columns: 1fr 1fr;
+
+  gap: 24px;
+
+  align-items: stretch;
+}

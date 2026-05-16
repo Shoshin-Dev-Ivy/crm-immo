@@ -1,12 +1,16 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
+import { JwtService } from '../core/jwt.service';
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {
 
   private api = 'http://localhost:8080/api';
 
-  constructor(private http: HttpClient) {}
+  constructor(
+    private http: HttpClient,
+    private jwtService: JwtService
+  ) {}
 
   login(email: string, password: string) {
     return this.http.post<any>(`${this.api}/login_check`, {
@@ -16,18 +20,18 @@ export class AuthService {
   }
 
   saveToken(token: string) {
-    localStorage.setItem('token', token);
+    this.jwtService.setToken(token);
   }
 
   getToken(): string | null {
-    return localStorage.getItem('token');
+    return this.jwtService.getToken();
   }
 
   logout() {
-    localStorage.removeItem('token');
+    this.jwtService.clearToken();
   }
 
   isLogged(): boolean {
-    return !!this.getToken();
+    return !!this.jwtService.getToken();
   }
 }

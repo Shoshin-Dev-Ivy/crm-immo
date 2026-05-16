@@ -1,35 +1,19 @@
-<h1>Login</h1>
+<div class="login-page">
 
-<form (ngSubmit)="onSubmit()">
+  <div class="login-card">
 
-  <div>
-    <label>Email</label>
+    <h2>CRM Immobilier</h2>
 
-    <input
-      type="email"
-      name="email"
-      [(ngModel)]="email"
-      required
-    />
+    <form (ngSubmit)="onSubmit()">
+
+      <input type="email" placeholder="Email" [(ngModel)]="email" name="email">
+
+      <input type="password" placeholder="Password" [(ngModel)]="password" name="password">
+
+      <button type="submit">Connexion</button>
+
+    </form>
+
   </div>
 
-  <div>
-    <label>Password</label>
-
-    <input
-      type="password"
-      name="password"
-      [(ngModel)]="password"
-      required
-    />
-  </div>
-
-  <button type="submit" [disabled]="loading">
-    Login
-  </button>
-
-</form>
-
-@if (error) {
-  <p>{{ error }}</p>
-}
+</div>
