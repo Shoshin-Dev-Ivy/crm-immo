@@ -1,71 +1,215 @@
-# Mini CRM Immobilier
+# CRM Immobilier – Symfony & Angular
 
-Application full-stack en cours de développement, simulant un CRM pour la gestion de biens immobiliers et de prospects.
+<p align="center">
+
+![Symfony](https://img.shields.io/badge/Symfony-000000?style=for-the-badge&logo=symfony)
+![Angular](https://img.shields.io/badge/Angular-DD0031?style=for-the-badge&logo=angular)
+![Docker](https://img.shields.io/badge/Docker-2496ED?style=for-the-badge&logo=docker)
+
+</p>
+
+Application CRM immobilier full-stack développée dans une logique proche production.
+
+Le projet simule un environnement métier réel :
+gestion de prospects, authentification sécurisée, protection des accès, dashboard métier et architecture API découplée.
+
+Projet construit progressivement avec une approche orientée :
+- architecture propre,
+- sécurité,
+- maintenabilité,
+- UX métier,
+- séparation frontend/backend.
+
+## Fonctionnalités implémentées
+
+### Backend Symfony API
+- API REST Symfony 7
+- Authentification JWT
+- Sécurisation des endpoints
+- Gestion des rôles (`ROLE_ADMIN`, `ROLE_USER`)
+- Voters Symfony pour contrôle d’accès métier
+- Relations utilisateurs ↔ leads
+- API JSON structurée
+- Architecture orientée services
+
+### Frontend Angular
+- Application Angular standalone
+- Login sécurisé connecté à l’API
+- Gestion centralisée du JWT
+- HTTP Interceptor
+- Route Guards
+- Dashboard protégé
+- Gestion d’état utilisateur
+- UX orientée CRM immobilier
+
+### Dashboard CRM
+- Affichage des leads récents
+- KPIs métier
+- Pipeline visuel
+- Statuts colorés
+- Cartes statistiques
+- Interface responsive
 
 ---
 
-## 🧱 Stack technique
+## Aperçu
 
-- Backend : PHP 8 – Symfony (en cours d'initialisation)
-- Frontend : Angular (structure initialisée)
-- Base de données : PostgreSQL + PostGIS
-- Conteneurisation : Docker
-- Serveur web : Nginx
-- Versionning : Git
+### Dashboard CRM
 
----
+Interface du dashboard CRM immobilier (version actuelle)
 
-## ⚙️ Architecture (en place)
-
-- api : environnement Symfony en cours de mise en place
-- frontend : application Angular initialisée
-- db : PostgreSQL + PostGIS opérationnel
-- reverse-proxy : Nginx configuré via Docker
-- infrastructure : Docker Compose
+<p align="center">
+  <img src="docs/screenshots/dashboard.png" alt="Dashboard CRM" width="900"/>
+</p>
 
 ---
 
-## 🚀 Lancement du projet
+## Stack technique
+
+### Backend
+- PHP 8.3
+- Symfony 7
+- API Platform (exposition des endpoints REST + sérialisation)
+- JWT Authentication
+- PostgreSQL
+- PostGIS
+
+### Frontend
+- Angular (standalone, RxJS, TypeScript)
+
+### Infrastructure
+- Docker
+- Docker Compose
+- Nginx
+
+### Outils
+- Git
+- GitHub
+- Composer
+- npm
+
+---
+
+## Architecture du projet
+
+```txt
+crm-immo/
+├── backend/      → API Symfony
+├── frontend/     → Application Angular
+├── docker/       → Configuration Nginx
+└── docker-compose.yml
+```
+
+--- 
+
+## Sécurité implémentée
+
+### Authentification
+- Login JWT sécurisé
+- Token Bearer
+- Interceptor Angular
+- Routes protégées
+
+### Autorisations
+- Voters Symfony
+- Contrôle d’accès par propriétaire
+- Gestion des rôles
+- Protection des endpoints sensibles
+
+---
+
+## Progression du projet
+
+Le développement du projet a été construit progressivement avec une montée en complexité continue :
+
+- Mise en place infrastructure Docker
+- Création API Symfony
+- Authentification JWT
+- Sécurisation des endpoints
+- Implémentation des Voters Symfony
+- Mise en place Guards & Interceptors
+- Développement frontend Angular
+- Création du dashboard CRM
+- Amélioration UX métier immobilier
+
+---
+
+## Lancement du projet
+
+Dans un terminal backend:
+### Docker
 
 ```bash
 docker compose up -d --build
 ```
+Dans un terminal frontend:
+### Angular
+```bash
+ng serve
+```
 
 ---
 
-## 🌐 Accès
+## Accès
 
-- Frontend : http://localhost:4200  
-- API : http://localhost:8000  
-- Base de données : PostgreSQL (via container Docker)
-
----
-
-## 📊 État actuel du projet
-
-- Infrastructure Docker (Nginx, PHP, PostgreSQL + PostGIS) opérationnelle
-- Environnement Symfony en cours de configuration
-- Structure Angular initialisée
-- Connexion inter-services en préparation
+| Service | URL |
+|---|---|
+| Frontend Angular | http://localhost:4200 |
+| API Symfony | http://localhost:8080 |
+| PostgreSQL | via Docker |
 
 ---
 
-## 📌 Objectif
+## État actuel du projet
 
-Projet réalisé dans le cadre d’une préparation à un poste de développeur full-stack dans un environnement :
-
-- Open Source  
-- orienté microservices  
-- avec forte exigence sur la qualité et la maintenabilité  
-
-Projet aligné avec une stack proche production (Symfony, Angular, PostGIS, Docker).
+Le projet dispose actuellement :
+- d’une architecture full-stack fonctionnelle,
+- d’une API sécurisée par JWT,
+- d’un frontend Angular connecté,
+- d’une base CRM exploitable,
+- d’une séparation claire frontend/backend,
+- d’une première UX métier orientée immobilier.
 
 ---
 
-## 🔧 Prochaines étapes
+## Roadmap
 
-- Mise en place API Symfony (structure REST)
-- Création des premières entités métier (biens, clients)
-- Début intégration Angular ↔ API
-- Mise en place des premiers endpoints fonctionnels
-- Ajout de tests backend  
+### Backend
+- CRUD complet des leads
+- Gestion des biens immobiliers
+- Pagination / filtres
+- Validation avancée
+- Tests automatisés
+
+### Frontend
+- Gestion complète des leads
+- Formulaires dynamiques
+- Pipeline Kanban
+- Recherche et filtres
+- Responsive mobile avancé
+
+### DevOps
+- CI/CD
+- Monitoring (à venir...)
+- Logs centralisés
+- Environnement staging
+
+---
+
+## Objectif du projet
+
+Ce projet sert de démonstration de compétences full-stack dans un environnement proche production :
+
+- architecture API moderne,
+- sécurisation applicative,
+- Angular + Symfony,
+- logique métier CRM,
+- bonnes pratiques de développement,
+- séparation des responsabilités,
+- UX métier.
+
+---
+
+## Repository GitHub
+
+https://github.com/Shoshin-Dev-Ivy/crm-immo
