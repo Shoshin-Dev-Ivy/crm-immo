@@ -1,0 +1,30 @@
+<div class="overdue">
+
+  <h3>Tâches en retard</h3>
+
+  <div *ngIf="overdueTasks.length === 0">
+    ✅ Aucune tâche en retard
+  </div>
+
+  <div class="task"
+       *ngFor="let task of overdueTasks">
+
+    <div class="title">
+      {{ task.title }}
+    </div>
+
+    <div class="meta">
+
+      <span>
+        👤 {{ task.leadName }}
+      </span>
+
+      <span class="date">
+        📅 {{ task.dueDate }}
+      </span>
+
+    </div>
+
+  </div>
+
+</div>

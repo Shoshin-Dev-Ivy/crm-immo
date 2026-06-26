@@ -1,0 +1,22 @@
+import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { OverdueTasksComponent } from './overdue-tasks';
+
+describe('OverdueTasksComponent', () => {
+  let component: OverdueTasksComponent;
+  let fixture: ComponentFixture<OverdueTasksComponent>;
+
+  beforeEach(async () => {
+    await TestBed.configureTestingModule({
+      imports: [OverdueTasksComponent],
+    }).compileComponents();
+
+    fixture = TestBed.createComponent(OverdueTasksComponent);
+    component = fixture.componentInstance;
+
+    fixture.detectChanges(); // important pour @Input()
+  });
+
+  it('should create', () => {
+    expect(component).toBeTruthy();
+  });
+});

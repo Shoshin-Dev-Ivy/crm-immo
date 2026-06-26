@@ -1,0 +1,74 @@
+groups:
+  - name: crm-alerts
+    rules:
+
+      # 🔴 INFRA DOWN
+      - alert: CRMAPIDown
+        expr: up == 0
+        for: 1m
+        labels:
+          severity: critical
+        annotations:
+          summary: "CRM API indisponible"
+
+      # 🟠 ERREUR API
+      - alert: CRMHighErrorRate
+        expr: sum(rate(crm_api_requests_total{status=~"5.."}[5m])) / sum(rate(crm_api_requests_total[5m])) > 0.05
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Taux d'erreur API élevé"
+
+      # 🟡 LOGIN FAIL SPIKE
+      - alert: CRMLoginFailureSpike
+        expr: rate(crm_api_requests_total{route="/api/login_check", status=~"5.."}[5m]) > 0
+        for: 2m
+        labels:
+          severity: critical
+        annotations:
+          summary: "Échecs login en hausse"
+
+      # 🟢 NO TRAFFIC
+      - alert: CRMNoTraffic
+        expr: sum(rate(crm_api_requests_total[5m])) == 0
+        for: 10m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Aucun trafic API détecté"
+
+  - name: crm-slo
+    rules:
+
+      # SLI Disponibilité — % requêtes non-5xx
+      - record: crm:sli:availability
+        expr: >
+          sum(rate(crm_api_requests_total{status!~"5.."}[5m]))
+          /
+          sum(rate(crm_api_requests_total[5m]))
+
+      # SLI Latence — % requêtes sous 500ms
+      - record: crm:sli:latency
+        expr: >
+          sum(rate(crm_api_request_duration_seconds_bucket{le="0.5"}[5m]))
+          /
+          sum(rate(crm_api_request_duration_seconds_count[5m]))
+
+      # Alerte burn rate disponibilité
+      - alert: CRMAvailabilitySLOBreach
+        expr: crm:sli:availability < 0.995
+        for: 2m
+        labels:
+          severity: critical
+        annotations:
+          summary: "SLO disponibilité breach — {{ $value | humanizePercentage }} de requêtes OK"
+
+      # Alerte burn rate latence
+      - alert: CRMLatencySLOBreach
+        expr: crm:sli:latency < 0.95
+        for: 2m
+        labels:
+          severity: warning
+        annotations:
+          summary: "SLO latence breach — {{ $value | humanizePercentage }} des requêtes sous 500ms"

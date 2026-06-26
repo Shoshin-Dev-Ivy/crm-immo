@@ -1,0 +1,40 @@
+<div class="pipeline">
+
+  <div
+    class="column"
+    *ngFor="let status of statuses">
+
+    <!-- HEADER COLONNE -->
+    <h3 class="column-title">
+      {{ LEAD_STATUS_LABEL[status] }}
+      <span class="count">
+        ({{ grouped[status]?.length || 0 }})
+      </span>
+    </h3>
+
+    <!-- CARDS -->
+    <div class="cards">
+
+      <div
+        class="card"
+        *ngFor="let lead of grouped[status]">
+
+        <div class="name">
+          {{ lead.name }}
+        </div>
+
+        <div class="property">
+          {{ lead.property }}
+        </div>
+
+        <div class="budget">
+          {{ lead.budget | number }} €
+        </div>
+
+      </div>
+
+    </div>
+
+  </div>
+
+</div>

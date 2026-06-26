@@ -1,0 +1,43 @@
+<div class="recent-leads">
+
+  <h3>Leads récents</h3>
+
+  <div class="list">
+
+    <div
+      class="lead"
+      *ngFor="let lead of leads">
+
+      <div class="top">
+
+        <div class="name">
+          {{ lead.name }}
+        </div>
+
+        <div class="status">
+          {{ lead.status }}
+        </div>
+
+      </div>
+
+      <div class="bottom">
+
+        <div class="property">
+          🏠 {{ lead.property }}
+        </div>
+
+        <div class="budget">
+          💰 {{ lead.budget | number }} €
+        </div>
+
+      </div>
+
+      <div class="date">
+        📅 {{ lead.createdAt }}
+      </div>
+
+    </div>
+
+  </div>
+
+</div>

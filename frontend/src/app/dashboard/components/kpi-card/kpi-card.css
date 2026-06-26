@@ -1,0 +1,51 @@
+.kpi-card {
+  background: #fff;
+  border-radius: 14px;
+
+  padding: 20px;
+
+  display: flex;
+  align-items: center;
+  gap: 16px;
+
+  min-height: 110px;
+
+  box-shadow: 0 4px 12px rgba(0,0,0,0.06);
+
+  border: 1px solid rgba(0,0,0,0.04);
+
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.kpi-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 18px rgba(0,0,0,0.08);
+}
+
+.icon {
+  font-size: 32px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  min-width: 48px;
+}
+
+.content {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.content h3 {
+  margin: 0;
+  font-size: 28px;
+  line-height: 1;
+}
+
+.content p {
+  margin: 0;
+  color: #666;
+  font-size: 14px;
+}

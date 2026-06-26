@@ -23,7 +23,7 @@ services:
       php:
         condition: service_started
     healthcheck:
-      test: ["CMD", "wget", "--spider", "http://localhost"]
+      test: ["CMD", "wget", "--spider", "http://127.0.0.1/health"]
       interval: 10s
       timeout: 3s
       retries: 3
@@ -44,5 +44,44 @@ services:
       timeout: 5s
       retries: 10
 
+  prometheus:
+    image: prom/prometheus
+    container_name: prometheus
+
+    ports:
+      - "9090:9090"
+
+    volumes:
+      - ./backend/docker/prometheus:/etc/prometheus
+
+    depends_on:
+      - php
+
+  alertmanager:
+    image: prom/alertmanager
+    container_name: alertmanager
+    ports:
+      - "9093:9093"
+    volumes:
+      - ./backend/alertmanager/alertmanager.yml:/etc/alertmanager/alertmanager.yml
+    command:
+      - "--config.file=/etc/alertmanager/alertmanager.yml"
+      - "--web.external-url=http://localhost:9093"
+
+  grafana:
+    image: grafana/grafana:11.4.0
+    container_name: grafana
+    ports:
+      - "3000:3000"
+    environment:
+      GF_SECURITY_ADMIN_USER: admin
+      GF_SECURITY_ADMIN_PASSWORD: admin
+    volumes:
+      - grafana_data:/var/lib/grafana
+      - ./docker/grafana/provisioning:/etc/grafana/provisioning
+    depends_on:
+      - prometheus
+
 volumes:
   db_data:
+  grafana_data:
