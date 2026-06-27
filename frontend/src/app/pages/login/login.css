@@ -21,6 +21,10 @@ h2 {
   color: #111827;
 }
 
+input, button {
+  box-sizing: border-box;
+}
+
 input {
   width: 100%;
   margin-bottom: 12px;

@@ -2,44 +2,41 @@
 
 <p align="center">
 
-![Symfony](https://img.shields.io/badge/Symfony-000000?style=for-the-badge&logo=symfony)
+![Symfony](https://img.shields.io/badge/Symfony-7.4-000000?style=for-the-badge&logo=symfony)
 ![Angular](https://img.shields.io/badge/Angular-DD0031?style=for-the-badge&logo=angular)
 ![Docker](https://img.shields.io/badge/Docker-2496ED?style=for-the-badge&logo=docker)
+![Prometheus](https://img.shields.io/badge/Prometheus-E6522C?style=for-the-badge&logo=prometheus)
+![Grafana](https://img.shields.io/badge/Grafana-F46800?style=for-the-badge&logo=grafana)
 
 </p>
 
 Application CRM immobilier full-stack développée dans une logique proche production.
 
 Le projet simule un environnement métier réel :
-gestion de prospects, authentification sécurisée, protection des accès, dashboard métier et architecture API découplée.
+gestion de prospects, authentification sécurisée, protection des accès, dashboard métier, architecture API découplée et monitoring complet.
 
-Projet construit progressivement avec une approche orientée :
-- architecture propre,
-- sécurité,
-- maintenabilité,
-- UX métier,
-- séparation frontend/backend.
+---
 
 ## Fonctionnalités implémentées
 
 ### Backend Symfony API
-- API REST Symfony 7
-- Authentification JWT
+- API REST Symfony 7.4 + API Platform 4.3
+- Authentification JWT (LexikJWTAuthenticationBundle)
 - Sécurisation des endpoints
 - Gestion des rôles (`ROLE_ADMIN`, `ROLE_USER`)
-- Voters Symfony pour contrôle d’accès métier
+- Voters Symfony pour contrôle d'accès métier (owner/admin)
 - Relations utilisateurs ↔ leads
-- API JSON structurée
-- Architecture orientée services
+- Architecture orientée services + event-driven
+- Event system : `LeadCreatedEvent` dispatché après chaque création de lead
 
 ### Frontend Angular
 - Application Angular standalone
-- Login sécurisé connecté à l’API
+- Login sécurisé connecté à l'API
 - Gestion centralisée du JWT
 - HTTP Interceptor
-- Route Guards
+- Route Guards (auth + rôles)
 - Dashboard protégé
-- Gestion d’état utilisateur
+- Gestion d'état utilisateur
 - UX orientée CRM immobilier
 
 ### Dashboard CRM
@@ -50,17 +47,21 @@ Projet construit progressivement avec une approche orientée :
 - Cartes statistiques
 - Interface responsive
 
----
-
-## Aperçu
-
-### Dashboard CRM
-
-Interface du dashboard CRM immobilier (version actuelle)
-
-<p align="center">
-  <img src="docs/screenshots/dashboard.png" alt="Dashboard CRM" width="900"/>
-</p>
+### Monitoring (production-ready)
+- Métriques Prometheus exposées sur `/metrics`
+  - `crm_leads_total` — nombre de leads créés (via event)
+  - `crm_api_requests_total` — requêtes par méthode/route/status
+  - `crm_api_request_duration_seconds` — latence par route (histogram)
+- SLO/SLI :
+  - Disponibilité — objectif 99.5% de requêtes non-5xx
+  - Latence — objectif 95% de requêtes sous 500ms
+- Alerting Alertmanager :
+  - Routing par severity : `critical` → Slack, `warning` → Slack + Email
+  - Anti-fatigue : grouping, repeat_interval, inhibition sur `CRMAPIDown`
+- Dashboard Grafana provisionné (9 panels) :
+  - KPIs : leads total, req/s, taux d'erreur 5xx, latence p99
+  - Timeseries : trafic par route, répartition statuts HTTP, latence p50/p95/p99
+  - Gauges SLO : disponibilité et latence
 
 ---
 
@@ -68,23 +69,25 @@ Interface du dashboard CRM immobilier (version actuelle)
 
 ### Backend
 - PHP 8.3
-- Symfony 7
-- API Platform (exposition des endpoints REST + sérialisation)
+- Symfony 7.4
+- API Platform 4.3
 - JWT Authentication
-- PostgreSQL
-- PostGIS
+- PostgreSQL 16
+- PostGIS 3.4
+- promphp/prometheus_client_php (stockage APCu)
 
 ### Frontend
 - Angular (standalone, RxJS, TypeScript)
 
 ### Infrastructure
-- Docker
-- Docker Compose
-- Nginx
+- Docker + Docker Compose
+- Nginx 1.27
+- Prometheus
+- Alertmanager
+- Grafana 11.4
 
 ### Outils
-- Git
-- GitHub
+- Git / GitHub
 - Composer
 - npm
 
@@ -94,13 +97,33 @@ Interface du dashboard CRM immobilier (version actuelle)
 
 ```txt
 crm-immo/
-├── backend/      → API Symfony
+├── backend/
+│   ├── src/
+│   │   ├── Controller/       → HealthController, MetricsController
+│   │   ├── DataFixtures/     → AppFixtures (users de dev)
+│   │   ├── Entity/           → Lead, User
+│   │   ├── Event/            → LeadCreatedEvent
+│   │   ├── EventSubscriber/  → MetricsSubscriber
+│   │   ├── Service/          → MetricsRegistry
+│   │   ├── State/            → LeadProcessor, LeadCollectionProvider
+│   │   └── Security/         → LeadVoter
+│   ├── alertmanager/
+│   │   ├── alertmanager.yml          → config réelle (non versionnée)
+│   │   └── alertmanager.yml.example  → template sans secrets
+│   └── docker/prometheus/
+│       ├── prometheus.yml
+│       └── alert-rules.yml
 ├── frontend/     → Application Angular
-├── docker/       → Configuration Nginx
+├── docker/
+│   ├── nginx/
+│   └── grafana/
+│       └── provisioning/
+│           ├── datasources/  → prometheus.yml
+│           └── dashboards/   → crm.yml, crm-dashboard.json
 └── docker-compose.yml
 ```
 
---- 
+---
 
 ## Sécurité implémentée
 
@@ -112,63 +135,78 @@ crm-immo/
 
 ### Autorisations
 - Voters Symfony
-- Contrôle d’accès par propriétaire
+- Contrôle d'accès par propriétaire
 - Gestion des rôles
 - Protection des endpoints sensibles
 
 ---
 
-## Progression du projet
-
-Le développement du projet a été construit progressivement avec une montée en complexité continue :
-
-- Mise en place infrastructure Docker
-- Création API Symfony
-- Authentification JWT
-- Sécurisation des endpoints
-- Implémentation des Voters Symfony
-- Mise en place Guards & Interceptors
-- Développement frontend Angular
-- Création du dashboard CRM
-- Amélioration UX métier immobilier
-
----
-
 ## Lancement du projet
 
-Dans un terminal backend:
-### Docker
+### Prérequis
+- Docker + Docker Compose
+- Node.js / npm (pour le frontend)
 
+### Configuration secrets Alertmanager
+Copier le template et renseigner les credentials :
 ```bash
-docker compose up -d --build
+cp backend/alertmanager/alertmanager.yml.example backend/alertmanager/alertmanager.yml
 ```
-Dans un terminal frontend:
-### Angular
+Renseigner les credentials personnels dans `alertmanager.yml` avant de lancer.
+
+### Démarrage
 ```bash
-ng serve
+# Backend + infrastructure
+docker compose up -d
+
+# Charger les données de développement
+docker exec crm-immo-php-1 php bin/console doctrine:fixtures:load --no-interaction
+
+# Frontend
+cd frontend && ng serve
 ```
 
 ---
 
 ## Accès
 
-| Service | URL |
-|---|---|
-| Frontend Angular | http://localhost:4200 |
-| API Symfony | http://localhost:8080 |
-| PostgreSQL | via Docker |
+| Service | URL | Credentials |
+|---|---|---|
+| Frontend Angular | http://localhost:4200 | voir comptes de développement |
+| API Symfony | http://localhost:8080 | JWT |
+| Prometheus | http://localhost:9090 | — |
+| Alertmanager | http://localhost:9093 | — |
+| Grafana | http://localhost:3000 | admin / (défini au premier login) |
+| PostgreSQL | localhost:5433 | crm / crm |
 
 ---
 
-## État actuel du projet
+## Comptes de développement
 
-Le projet dispose actuellement :
-- d’une architecture full-stack fonctionnelle,
-- d’une API sécurisée par JWT,
-- d’un frontend Angular connecté,
-- d’une base CRM exploitable,
-- d’une séparation claire frontend/backend,
-- d’une première UX métier orientée immobilier.
+| Rôle | Email | Mot de passe |
+|---|---|---|
+| Admin | admin@example.com | password |
+| User | user@example.com | password |
+
+> Ces comptes sont créés automatiquement via les fixtures Doctrine (`doctrine:fixtures:load`).
+> Ne jamais utiliser ces credentials en production.
+
+---
+
+## Progression du projet
+
+- ✅ Infrastructure Docker
+- ✅ API Symfony + API Platform
+- ✅ Authentification JWT
+- ✅ Sécurisation endpoints + Voters
+- ✅ Event-driven architecture (LeadCreatedEvent)
+- ✅ Guards & Interceptors Angular
+- ✅ Dashboard CRM Angular
+- ✅ Fixtures Doctrine (users de dev)
+- ✅ Métriques Prometheus (counter, histogram)
+- ✅ SLO/SLI (disponibilité 99.5%, latence 95% < 500ms)
+- ✅ Alertmanager (routing, anti-fatigue, inhibition)
+- ✅ Dashboard Grafana provisionné (9 panels)
 
 ---
 
@@ -190,7 +228,6 @@ Le projet dispose actuellement :
 
 ### DevOps
 - CI/CD
-- Monitoring (à venir...)
 - Logs centralisés
 - Environnement staging
 
@@ -200,13 +237,13 @@ Le projet dispose actuellement :
 
 Ce projet sert de démonstration de compétences full-stack dans un environnement proche production :
 
-- architecture API moderne,
-- sécurisation applicative,
-- Angular + Symfony,
-- logique métier CRM,
-- bonnes pratiques de développement,
-- séparation des responsabilités,
-- UX métier.
+- architecture API moderne (Symfony + API Platform)
+- sécurisation applicative (JWT, Voters, Guards)
+- Angular + Symfony découplés
+- logique métier CRM immobilier
+- event-driven architecture
+- monitoring production-ready (Prometheus, Alertmanager, Grafana)
+- bonnes pratiques de développement
 
 ---
 
